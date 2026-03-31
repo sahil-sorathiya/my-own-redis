@@ -171,6 +171,11 @@ public class ClientHandler extends Thread {
                     }
                     outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
                 }
+                else if(s.equalsIgnoreCase("llen")){
+                    String key = command.get(1);
+                    if(!hm2.containsKey(key)) outputStream.write((":0"+sep).getBytes());
+                    else outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
+                }
                 else {
                     outputStream.write(("+PONG" + sep).getBytes());
                 }
