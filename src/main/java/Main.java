@@ -43,7 +43,7 @@ class ClientHandler extends Thread {
             // Keep reading until client disconnects
 //            while ((line = reader.readLine()) != null) {
             while (true) {
-                System.out.println("Received: " + line);
+//                System.out.println("Received: " + line);
                 String response = "+PONG\r\n";
                 output.write(response.getBytes());
                 output.flush();
