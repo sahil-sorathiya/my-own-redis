@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClientHandler extends Thread {
     private final Socket clientSocket;
@@ -10,6 +11,8 @@ public class ClientHandler extends Thread {
     OutputStream outputStream;
 //    final String sep = "\\r\\n";
     final String sep = "\r\n";
+
+    HashMap <String, String> hm = new HashMap<>();
 
     ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -65,11 +68,26 @@ public class ClientHandler extends Thread {
                     index = index + stringLength + 4;
                 }
 
-                if(command.get(0).equalsIgnoreCase("echo")){
-                    outputStream.write(new String("$" + command.get(1).length() + sep + command.get(1) + sep).getBytes());
+                String s = command.get(0);
+                if(s.equalsIgnoreCase("echo")){
+                    outputStream.write(("$" + command.get(1).length() + sep + command.get(1) + sep).getBytes());
+                }
+                else if(s.equalsIgnoreCase("set")){
+                    hm.put(command.get(1), command.get(2));
+                    outputStream.write(("+OK" + sep).getBytes());
+                }
+                else if(s.equalsIgnoreCase("get")){
+                    String key = command.get(1);
+                    if(hm.containsKey(key)){
+                        String val = hm.get(key);
+                        outputStream.write(("$" + val.length() + sep + val + sep).getBytes());
+                    }
+                    else {
+                        outputStream.write(("$-1" + sep).getBytes());
+                    }
                 }
                 else {
-                    outputStream.write(new String("+PONG" + sep).getBytes());
+                    outputStream.write(("+PONG" + sep).getBytes());
                 }
 
             }
