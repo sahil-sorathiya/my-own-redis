@@ -44,10 +44,10 @@ class ClientHandler extends Thread {
             while ((line = reader.readLine()) != null) {
                 System.out.println("Received: " + line);
 
-                String response = "+PONG\r\n";
-                output.write(response.getBytes());
-                output.flush();
             }
+            String response = "+PONG\r\n";
+            output.write(response.getBytes());
+            output.flush();
 
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
