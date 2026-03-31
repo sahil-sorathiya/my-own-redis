@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ClientHandler extends Thread {
     private final Socket clientSocket;
@@ -112,12 +113,14 @@ public class ClientHandler extends Thread {
                 }
                 else if(s.equalsIgnoreCase("rpush")){
                     String key = command.get(1);
-                    String val = command.get(2);
+                    List<String> vals = command.subList(2, command.size());
 
                     if(!hm2.containsKey(key)){
                         hm2.put(key, new ArrayList<>());
                     }
-                    hm2.get(key).add(val);
+                    for(String val: vals){
+                        hm2.get(key).add(val);
+                    }
                     outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
                 }
                 else {
