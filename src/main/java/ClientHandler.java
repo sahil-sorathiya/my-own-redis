@@ -23,10 +23,7 @@ public class ClientHandler extends Thread {
                 byte[] input = new byte[1024];
                 int byteCount = inputStream.read(input);
 
-                System.out.println("byteCount : " + byteCount);
-
                 String msg = new String(input).trim();
-                System.out.println("Incoming message is : " + msg);
 
                 int index = 0;
                 int sepIndex = 0;
@@ -35,27 +32,22 @@ public class ClientHandler extends Thread {
                 if (msg.charAt(index) == '*') {
                     index++;
                     sepIndex = msg.indexOf(sep, index);
-                    System.out.println("sepIndex : " + sepIndex + " " + sep);
                     int arrayLength = Integer.parseInt(msg.substring(index, sepIndex));
                     index = sepIndex + sep.length();
 
                     for (int i = 0; i < arrayLength; i++) {
                         if (msg.charAt(index) == '+') {
                             index++;
-                            System.out.println("Index : " + index);
                             sepIndex = msg.indexOf(sep, index);
                             command.add(msg.substring(index, sepIndex));
                             index = sepIndex + sep.length();
-                            System.out.println("Index : " + index);
                         } else if (msg.charAt(index) == '$') {
                             index++;
-                            System.out.println("Index : " + index);
                             sepIndex = msg.indexOf(sep, index);
                             int stringLength = Integer.parseInt(msg.substring(index, sepIndex));
                             index = sepIndex + sep.length();
                             command.add(msg.substring(index, index + stringLength));
                             index = index + stringLength + sep.length();
-                            System.out.println("Index : " + index);
                         }
                     }
                 }
@@ -71,11 +63,6 @@ public class ClientHandler extends Thread {
                     index = sepIndex + sep.length();
                     command.add(msg.substring(index, index + stringLength));
                     index = index + stringLength + 4;
-                }
-
-                System.out.println("Index : " + index);
-                for(String c: command){
-                    System.out.println(c);
                 }
 
                 if(command.get(0).equalsIgnoreCase("echo")){
