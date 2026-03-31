@@ -132,7 +132,7 @@ public class ClientHandler extends Thread {
                     System.out.println("l : " + l);
                     System.out.println("r : " + r);
 
-                    if(!hm2.containsKey(key) && l >= hm2.get(key).size() && l > r){
+                    if(!hm2.containsKey(key) || l >= hm2.get(key).size() || l > r){
                         outputStream.write(("*0" + sep).getBytes());
                     }
                     else{
