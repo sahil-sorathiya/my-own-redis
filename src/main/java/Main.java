@@ -34,19 +34,28 @@ class ClientHandler extends Thread {
 
     public void run(){
         try (
-                InputStream input = clientSocket.getInputStream();
-                OutputStream output = clientSocket.getOutputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+//                InputStream input = clientSocket.getInputStream();
+//                OutputStream output = clientSocket.getOutputStream();
+//                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         ) {
-            String line;
+//            String line;
+//
+//            // Keep reading until client disconnects
+////            while ((line = reader.readLine()) != null) {
+//            while (true) {
+////                System.out.println("Received: " + line);
+//                String response = "+PONG\r\n";
+//                output.write(response.getBytes());
+//                output.flush();
+//            }
 
-            // Keep reading until client disconnects
-//            while ((line = reader.readLine()) != null) {
+            InputStream inputStream = clientSocket.getInputStream();
+            OutputStream outputStream = clientSocket.getOutputStream();
             while (true) {
-//                System.out.println("Received: " + line);
-                String response = "+PONG\r\n";
-                output.write(response.getBytes());
-                output.flush();
+                byte[] input = new byte[1024];
+                int byteCount = inputStream.read(input);
+                String inputString = new String(input).trim();
+                outputStream.write("+PONG\r\n".getBytes());
             }
 
         } catch (IOException e) {
