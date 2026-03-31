@@ -192,6 +192,7 @@ public class ClientHandler extends Thread {
                     else{
                         ArrayList <String> temp = new ArrayList<>();
                         while(count > 0 && hm2.get(key).size() > 0){
+                            count--;
                             temp.add(hm2.get(key).removeFirst());
                         }
                         StringBuilder res = new StringBuilder("*" + temp.size() + sep);
