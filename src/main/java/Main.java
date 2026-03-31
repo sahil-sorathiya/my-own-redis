@@ -32,11 +32,10 @@ class ClientHandler extends Thread {
     }
 
     public void run(){
-        try (
+        try {
             InputStream input = socket.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
-        ) {
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
             String message;
 
             // Continuous listening loop
