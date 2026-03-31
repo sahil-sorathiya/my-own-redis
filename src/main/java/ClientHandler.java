@@ -159,6 +159,18 @@ public class ClientHandler extends Thread {
                     }
 
                 }
+                else if(s.equalsIgnoreCase("lpush")){
+                    String key = command.get(1);
+                    List<String> vals = command.subList(2, command.size());
+
+                    if(!hm2.containsKey(key)){
+                        hm2.put(key, new ArrayList<>());
+                    }
+                    for(String val: vals){
+                        hm2.get(key).addFirst(val);
+                    }
+                    outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
+                }
                 else {
                     outputStream.write(("+PONG" + sep).getBytes());
                 }
