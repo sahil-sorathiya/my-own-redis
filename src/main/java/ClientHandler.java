@@ -129,33 +129,35 @@ public class ClientHandler extends Thread {
                     if(!hm2.containsKey(key)){
                         outputStream.write(("*0" + sep).getBytes());
                     }
-                    ArrayList<String> vals = hm2.get(key);
-                    int l = Integer.parseInt(command.get(2));
-                    int r = Integer.parseInt(command.get(3));
-
-                    if(l < 0) {
-                        if(l < -1*vals.size()) l = 0;
-                        else l = vals.size() + l;
-                    }
-
-                    if(r < 0){
-                        if(r < -1*vals.size()) r = 0;
-                        else r = vals.size() + r;
-                    }
-
-                    if(l >= vals.size() || l > r){
-                        outputStream.write(("*0" + sep).getBytes());
-                    }
                     else{
-                        ArrayList <String> temp = new ArrayList<>();
-                        for(int i = l; i <= r && i < vals.size(); i++){
-                            temp.add("$" + vals.get(i).length() + sep + vals.get(i) + sep);
+                        ArrayList<String> vals = hm2.get(key);
+                        int l = Integer.parseInt(command.get(2));
+                        int r = Integer.parseInt(command.get(3));
+
+                        if(l < 0) {
+                            if(l < -1*vals.size()) l = 0;
+                            else l = vals.size() + l;
                         }
-                        StringBuilder res = new StringBuilder("*" + temp.size() + sep);
-                        for(String t: temp){
-                            res.append(t);
+
+                        if(r < 0){
+                            if(r < -1*vals.size()) r = 0;
+                            else r = vals.size() + r;
                         }
-                        outputStream.write(res.toString().getBytes());
+
+                        if(l >= vals.size() || l > r){
+                            outputStream.write(("*0" + sep).getBytes());
+                        }
+                        else{
+                            ArrayList <String> temp = new ArrayList<>();
+                            for(int i = l; i <= r && i < vals.size(); i++){
+                                temp.add("$" + vals.get(i).length() + sep + vals.get(i) + sep);
+                            }
+                            StringBuilder res = new StringBuilder("*" + temp.size() + sep);
+                            for(String t: temp){
+                                res.append(t);
+                            }
+                            outputStream.write(res.toString().getBytes());
+                        }
                     }
 
                 }
@@ -175,6 +177,16 @@ public class ClientHandler extends Thread {
                     String key = command.get(1);
                     if(!hm2.containsKey(key)) outputStream.write((":0"+sep).getBytes());
                     else outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
+                }
+                else if(s.equalsIgnoreCase("lpop")){
+                    String key = command.get(1);
+                    if(!hm2.containsKey(key)){
+                        outputStream.write(("$-1"+sep).getBytes());
+                    }
+                    else{
+                        String val = hm2.get(key).removeFirst();
+                        outputStream.write(("$"+val.length()+sep).getBytes());
+                    }
                 }
                 else {
                     outputStream.write(("+PONG" + sep).getBytes());
