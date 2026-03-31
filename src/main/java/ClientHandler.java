@@ -126,8 +126,11 @@ public class ClientHandler extends Thread {
                 }
                 else if(s.equalsIgnoreCase("LRANGE")){
                     String key = command.get(1);
+                    System.out.println("key : " + key);
                     int l = Integer.parseInt(command.get(2));
                     int r = Integer.parseInt(command.get(3));
+                    System.out.println("l : " + l);
+                    System.out.println("r : " + r);
 
                     if(!hm2.containsKey(key) && l >= hm2.get(key).size() && l > r){
                         outputStream.write(("*0" + sep).getBytes());
