@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,6 +123,27 @@ public class ClientHandler extends Thread {
                         hm2.get(key).add(val);
                     }
                     outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
+                }
+                else if(s.equalsIgnoreCase("LRANGE")){
+                    String key = command.get(0);
+                    int l = Integer.parseInt(command.get(1));
+                    int r = Integer.parseInt(command.get(2));
+
+                    if(!hm2.containsKey(key) && l >= hm2.get(key).size() && l > r){
+                        outputStream.write(("*0" + sep).getBytes());
+                    }
+                    else{
+                        ArrayList <String> temp = new ArrayList<>();
+                        for(int i = l; i < r && i < hm2.get(key).size(); i++){
+                            temp.add("$" + hm2.get(key).get(i).length() + sep + hm2.get(key).get(i) + sep);
+                        }
+                        StringBuilder res = new StringBuilder("*" + temp.size() + sep);
+                        for(String t: temp){
+                            res.append(t);
+                        }
+                        outputStream.write(res.toString().getBytes());
+                    }
+
                 }
                 else {
                     outputStream.write(("+PONG" + sep).getBytes());
