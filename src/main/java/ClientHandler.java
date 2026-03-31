@@ -180,12 +180,25 @@ public class ClientHandler extends Thread {
                 }
                 else if(s.equalsIgnoreCase("lpop")){
                     String key = command.get(1);
+                    int count = 0;
+                    if(command.size() == 3) count = Integer.parseInt(command.get(2));
                     if(!hm2.containsKey(key)){
                         outputStream.write(("$-1" + sep).getBytes());
                     }
-                    else{
+                    else if(count == 0){
                         String val = hm2.get(key).removeFirst();
                         outputStream.write(("$" + val.length() + sep + val + sep).getBytes());
+                    }
+                    else{
+                        ArrayList <String> temp = new ArrayList<>();
+                        while(count > 0 && hm2.get(key).size() > 0){
+                            temp.add(hm2.get(key).removeFirst());
+                        }
+                        StringBuilder res = new StringBuilder("*" + temp.size() + sep);
+                        for(String t: temp){
+                            res.append("$" + t.length() + sep + t + sep);
+                        }
+                        outputStream.write(res.toString().getBytes());
                     }
                 }
                 else {
