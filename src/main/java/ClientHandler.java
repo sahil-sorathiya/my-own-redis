@@ -138,6 +138,7 @@ public class ClientHandler extends Thread {
                     else{
                         ArrayList <String> temp = new ArrayList<>();
                         for(int i = l; i < r && i < hm2.get(key).size(); i++){
+                            System.out.println("i : " + i);
                             temp.add("$" + hm2.get(key).get(i).length() + sep + hm2.get(key).get(i) + sep);
                         }
                         StringBuilder res = new StringBuilder("*" + temp.size() + sep);
