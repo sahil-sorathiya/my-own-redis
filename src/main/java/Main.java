@@ -27,18 +27,36 @@ public class Main {
 
 class ClientHandler extends Thread {
     private final Socket clientSocket;
+
     ClientHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
     }
 
     public void run(){
-        try {
-            clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
-            clientSocket.close();
+        try (
+                InputStream input = clientSocket.getInputStream();
+                OutputStream output = clientSocket.getOutputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        ) {
+            String line;
+
+            // Keep reading until client disconnects
+            while ((line = reader.readLine()) != null) {
+                System.out.println("Received: " + line);
+
+                String response = "+PONG\r\n";
+                output.write(response.getBytes());
+                output.flush();
+            }
+
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
-            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println("Error closing socket: " + e.getMessage());
+            }
         }
-
     }
 }
