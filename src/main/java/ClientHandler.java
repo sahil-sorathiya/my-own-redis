@@ -42,16 +42,20 @@ public class ClientHandler extends Thread {
                     for (int i = 0; i < arrayLength; i++) {
                         if (msg.charAt(index) == '+') {
                             index++;
+                            System.out.println("Index : " + index);
                             sepIndex = msg.indexOf(sep, index);
                             command.add(msg.substring(index, sepIndex));
                             index = sepIndex + sep.length();
+                            System.out.println("Index : " + index);
                         } else if (msg.charAt(index) == '$') {
                             index++;
+                            System.out.println("Index : " + index);
                             sepIndex = msg.indexOf(sep, index);
                             int stringLength = Integer.parseInt(msg.substring(index, sepIndex));
                             index = sepIndex + sep.length();
                             command.add(msg.substring(index, index + stringLength));
-                            index = index + stringLength + 4;
+                            index = index + stringLength + sep.length();
+                            System.out.println("Index : " + index);
                         }
                     }
                 }
