@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,7 +13,7 @@ public class ClientHandler extends Thread {
 //    final String sep = "\\r\\n";
     final String sep = "\r\n";
 
-    HashMap <String, String> hm = new HashMap<>();
+    HashMap <String, ArrayList<String>> hm = new HashMap<>();
 
     ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -73,14 +74,35 @@ public class ClientHandler extends Thread {
                     outputStream.write(("$" + command.get(1).length() + sep + command.get(1) + sep).getBytes());
                 }
                 else if(s.equalsIgnoreCase("set")){
-                    hm.put(command.get(1), command.get(2));
+                    String key = command.get(1);
+                    String val = command.get(2);
+                    hm.put(command.get(1), new ArrayList<>());
+                    hm.get(key).add(val);
+                    if(command.size() > 3 && command.get(3).equalsIgnoreCase("px")){
+                        String ms = command.get(4);
+                        String timestamp = Instant.now().plusMillis(Integer.parseInt(ms)).toString();
+                        hm.get(key).add(timestamp);
+                    }
                     outputStream.write(("+OK" + sep).getBytes());
                 }
                 else if(s.equalsIgnoreCase("get")){
                     String key = command.get(1);
                     if(hm.containsKey(key)){
-                        String val = hm.get(key);
-                        outputStream.write(("$" + val.length() + sep + val + sep).getBytes());
+                        ArrayList<String> val = hm.get(key);
+                        if(val.size() > 1){
+                            Instant t1 = Instant.now();
+                            Instant t2 = Instant.parse(val.get(1));
+                            if(t1.isAfter(t2)){
+                                hm.remove(key);
+                                outputStream.write(("$-1" + sep).getBytes());
+                            }
+                            else{
+                                outputStream.write(("$" + val.get(0).length() + sep + val + sep).getBytes());
+                            }
+                        }
+                        else{
+                            outputStream.write(("$" + val.get(0).length() + sep + val + sep).getBytes());
+                        }
                     }
                     else {
                         outputStream.write(("$-1" + sep).getBytes());
