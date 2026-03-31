@@ -181,11 +181,11 @@ public class ClientHandler extends Thread {
                 else if(s.equalsIgnoreCase("lpop")){
                     String key = command.get(1);
                     if(!hm2.containsKey(key)){
-                        outputStream.write(("$-1"+sep).getBytes());
+                        outputStream.write(("$-1" + sep).getBytes());
                     }
                     else{
                         String val = hm2.get(key).removeFirst();
-                        outputStream.write(("$"+val.length()+sep).getBytes());
+                        outputStream.write(("$" + val.length() + val + sep).getBytes());
                     }
                 }
                 else {
