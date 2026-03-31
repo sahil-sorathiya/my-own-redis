@@ -44,7 +44,8 @@ class ClientHandler extends Thread {
                 System.out.println("Received: " + message);
 
                 // Echo back to client
-                writer.println("+PONG\r\n");
+                writer.print("+PONG\r\n");
+                writer.flush();
 
 //                if (message.equalsIgnoreCase("exit")) {
 //                    System.out.println("Client disconnected.");
