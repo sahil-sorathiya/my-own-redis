@@ -14,6 +14,7 @@ public class ClientHandler extends Thread {
     final String sep = "\r\n";
 
     HashMap <String, ArrayList<String>> hm = new HashMap<>();
+    HashMap <String, ArrayList<String>> hm2 = new HashMap<>();
 
     ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -60,7 +61,8 @@ public class ClientHandler extends Thread {
                     sepIndex = msg.indexOf(sep, index);
                     command.add(msg.substring(index, sepIndex));
                     index = sepIndex + sep.length();
-                } else if (msg.charAt(index) == '$') {
+                }
+                else if (msg.charAt(index) == '$') {
                     index++;
                     sepIndex = msg.indexOf(sep, index);
                     int stringLength = Integer.parseInt(msg.substring(index, sepIndex));
@@ -107,6 +109,16 @@ public class ClientHandler extends Thread {
                     else {
                         outputStream.write(("$-1" + sep).getBytes());
                     }
+                }
+                else if(s.equalsIgnoreCase("rpush")){
+                    String key = command.get(1);
+                    String val = command.get(2);
+
+                    if(!hm2.containsKey(key)){
+                        hm2.put(key, new ArrayList<>());
+                    }
+                    hm2.get(key).add(val);
+                    outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
                 }
                 else {
                     outputStream.write(("+PONG" + sep).getBytes());
