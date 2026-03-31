@@ -33,11 +33,10 @@ class ClientHandler extends Thread {
     }
 
     public void run(){
-        try (
+        try {
 //                InputStream input = clientSocket.getInputStream();
 //                OutputStream output = clientSocket.getOutputStream();
 //                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        ) {
 //            String line;
 //
 //            // Keep reading until client disconnects
