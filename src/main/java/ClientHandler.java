@@ -97,11 +97,11 @@ public class ClientHandler extends Thread {
                                 outputStream.write(("$-1" + sep).getBytes());
                             }
                             else{
-                                outputStream.write(("$" + val.get(0).length() + sep + val + sep).getBytes());
+                                outputStream.write(("$" + val.get(0).length() + sep + val.get(0) + sep).getBytes());
                             }
                         }
                         else{
-                            outputStream.write(("$" + val.get(0).length() + sep + val + sep).getBytes());
+                            outputStream.write(("$" + val.get(0).length() + sep + val.get(0) + sep).getBytes());
                         }
                     }
                     else {
