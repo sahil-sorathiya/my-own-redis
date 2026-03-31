@@ -8,7 +8,8 @@ public class ClientHandler extends Thread {
     private final Socket clientSocket;
     InputStream inputStream;
     OutputStream outputStream;
-    final String sep = "\\r\\n";
+//    final String sep = "\\r\\n";
+    final String sep = "\r\n";
 
     ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -74,10 +75,10 @@ public class ClientHandler extends Thread {
                 }
 
                 if(command.get(0).equalsIgnoreCase("echo")){
-                    outputStream.write(new String("$" + command.get(1).length() + "\\r\\n" + command.get(1) + "\\r\\n").getBytes());
+                    outputStream.write(new String("$" + command.get(1).length() + sep + command.get(1) + sep).getBytes());
                 }
                 else {
-                    outputStream.write("+PONG\r\n".getBytes());
+                    outputStream.write(new String("+PONG" + sep).getBytes());
                 }
 
             }
