@@ -4,7 +4,6 @@ import java.net.Socket;
 
 public class Main {
     public static void main(String[] args){
-        // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
 
         ServerSocket serverSocket = null;
@@ -21,42 +20,25 @@ public class Main {
 
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }
 
 class ClientHandler extends Thread {
-    private final Socket socket;
-    ClientHandler(Socket socket){
-        this.socket = socket;
+    private final Socket clientSocket;
+    ClientHandler(Socket clientSocket){
+        this.clientSocket = clientSocket;
     }
 
     public void run(){
         try {
-            InputStream input = socket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            String message;
-
-            // Continuous listening loop
-            while ((message = reader.readLine()) != null) {
-                System.out.println("Received: " + message);
-
-                // Echo back to client
-                writer.print("+PONG\r\n");
-                writer.flush();
-
-//                if (message.equalsIgnoreCase("exit")) {
-//                    System.out.println("Client disconnected.");
-//                    break;
-//                }
-            }
-
-            socket.close();
-
-        } catch (IOException ex) {
-            System.out.println("Client handler exception: " + ex.getMessage());
-            ex.printStackTrace();
+            clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
+            clientSocket.close();
+        } catch (IOException e) {
+            System.out.println("IOException: " + e.getMessage());
+            throw new RuntimeException(e);
         }
+
     }
 }
