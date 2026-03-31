@@ -124,18 +124,32 @@ public class ClientHandler extends Thread {
                     }
                     outputStream.write((":" + hm2.get(key).size() + sep).getBytes());
                 }
-                else if(s.equalsIgnoreCase("LRANGE")){
+                else if(s.equalsIgnoreCase("lrange")){
                     String key = command.get(1);
+                    if(!hm2.containsKey(key)){
+                        outputStream.write(("*0" + sep).getBytes());
+                    }
+                    ArrayList<String> vals = hm2.get(key);
                     int l = Integer.parseInt(command.get(2));
                     int r = Integer.parseInt(command.get(3));
 
-                    if(!hm2.containsKey(key) || l >= hm2.get(key).size() || l > r){
+                    if(l < 0) {
+                        if(l < -1*vals.size()) l = 0;
+                        else l = vals.size() + l;
+                    }
+
+                    if(r < 0){
+                        if(r < -1*vals.size()) r = 0;
+                        else r = vals.size() + r;
+                    }
+
+                    if(l >= vals.size() || l > r){
                         outputStream.write(("*0" + sep).getBytes());
                     }
                     else{
                         ArrayList <String> temp = new ArrayList<>();
-                        for(int i = l; i <= r && i < hm2.get(key).size(); i++){
-                            temp.add("$" + hm2.get(key).get(i).length() + sep + hm2.get(key).get(i) + sep);
+                        for(int i = l; i <= r && i < vals.size(); i++){
+                            temp.add("$" + vals.get(i).length() + sep + vals.get(i) + sep);
                         }
                         StringBuilder res = new StringBuilder("*" + temp.size() + sep);
                         for(String t: temp){
