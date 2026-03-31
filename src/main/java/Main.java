@@ -41,13 +41,13 @@ class ClientHandler extends Thread {
             String line;
 
             // Keep reading until client disconnects
-            while ((line = reader.readLine()) != null) {
+//            while ((line = reader.readLine()) != null) {
+            while (true) {
                 System.out.println("Received: " + line);
-
+                String response = "+PONG\r\n";
+                output.write(response.getBytes());
+                output.flush();
             }
-            String response = "+PONG\r\n";
-            output.write(response.getBytes());
-            output.flush();
 
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
