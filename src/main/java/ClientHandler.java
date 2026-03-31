@@ -185,7 +185,7 @@ public class ClientHandler extends Thread {
                     }
                     else{
                         String val = hm2.get(key).removeFirst();
-                        outputStream.write(("$" + val.length() + val + sep).getBytes());
+                        outputStream.write(("$" + val.length() + sep + val + sep).getBytes());
                     }
                 }
                 else {
