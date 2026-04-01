@@ -233,7 +233,32 @@ public class ClientHandler extends Thread {
                     outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
                 }
                 else{
+                    Instant expiry = Instant.now().plusSeconds(seconds);
+                    synchronized (lhs1){
+                        lhs1.add(Thread.currentThread().threadId());
+                    }
 
+                    boolean isExpired = false;
+                    while(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId()){
+                        Instant now = Instant.now();
+                        if(now.isAfter(expiry)) {
+                            isExpired = true;
+                            break;
+                        }
+                    }
+                    if(isExpired){
+                        synchronized (lhs1){
+                            lhs1.remove(Thread.currentThread().threadId());
+                        }
+                        outputStream.write(("*-1" + sep).getBytes());
+                    }
+                    else{
+                        synchronized (lhs1){
+                            lhs1.removeFirst();
+                        }
+                        String val = temp.removeFirst();
+                        outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
+                    }
                 }
             }
             else {
