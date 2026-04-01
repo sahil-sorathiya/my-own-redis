@@ -457,7 +457,7 @@ public class ClientHandler extends Thread {
         if(s.equalsIgnoreCase("xread")){
 
             StringBuilder res = new StringBuilder("*" + (command.size()-2)/2 + sep);
-
+            System.out.println(res);
             for(int i = 2; i <= (command.size()/2); i++){
                 String streamName = command.get(i);
                 String streamId = command.get(i + ((command.size()-2)/2));
@@ -497,7 +497,7 @@ public class ClientHandler extends Thread {
 
 
             }
-
+            System.out.println(res);
             outputStream.write(res.toString().getBytes());
             return;
         }
