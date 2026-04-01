@@ -339,9 +339,8 @@ public class ClientHandler extends Thread {
                     seq = Long.parseLong(lastStreamIdSplit[1]) + 1;
                 }
                 streamId = streamIdSplit[0] + "-" + seq;
+                streamIdSplit[1] = String.valueOf(seq);
             }
-
-            System.out.println("SID : " + streamId);
 
             // if lastStreamIdMillis > streamIdMillis throw error
             if(Long.parseLong(lastStreamIdSplit[0]) > Long.parseLong(streamIdSplit[0])){
@@ -400,7 +399,6 @@ public class ClientHandler extends Thread {
                             && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
                         {
                             validIds.add(streamId);
-                            System.out.println("2 " + streamId);
                         }
                     }
                     // start millis are equal so checking for seq number
@@ -409,7 +407,6 @@ public class ClientHandler extends Thread {
                         if(Long.parseLong(streamIdSplit[1]) >= Long.parseLong(streamIdStartSplit[1]))
                         {
                             validIds.add(streamId);
-                            System.out.println("2 " + streamId);
                         }
                     }
                     // end millis are equal so checking seq number
@@ -418,7 +415,6 @@ public class ClientHandler extends Thread {
                         if(Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
                         {
                             validIds.add(streamId);
-                            System.out.println("3 " + streamId);
                         }
                     }
                     // normal check
@@ -427,18 +423,15 @@ public class ClientHandler extends Thread {
                                 && Long.parseLong(streamIdSplit[0]) < Long.parseLong(streamIdEndSplit[0]))
                         {
                             validIds.add(streamId);
-                            System.out.println("4 " + streamId);
                         }
                     }
 
                 }
             }
 
-            System.out.println(validIds);
 
             StringBuilder res = new StringBuilder("*" + validIds.size() + sep);
 
-            System.out.println("1 : " + res);
             for(String streamId: validIds){
                 ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(streamId);
                 res.append("*2" + sep);
@@ -451,7 +444,6 @@ public class ClientHandler extends Thread {
                     res.append("$" + key.length() + sep + key + sep);
                     res.append("$" + val.length() + sep + val + sep);
                 }
-                System.out.println(res);
             }
             outputStream.write(res.toString().getBytes());
             return;
