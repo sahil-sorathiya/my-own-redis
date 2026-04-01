@@ -409,12 +409,14 @@ public class ClientHandler extends Thread {
                     }
                 }
             }
-
+            System.out.println(validIds);
             StringBuilder res = new StringBuilder("*" + validIds.size() + sep);
 
             for(String streamId: validIds){
                 ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(streamId);
-                res.append("*2" + sep + "$" + streamId.length() + sep + streamId + sep);
+                res.append("*2" + sep);
+                res.append("$" + streamId.length() + sep + streamId + sep);
+
                 res.append("*" + temp.size() + sep);
 
                 for(String key: temp.keySet()){
