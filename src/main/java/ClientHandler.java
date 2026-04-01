@@ -491,6 +491,7 @@ public class ClientHandler extends Thread {
                     ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(id);
                     res.append("*" + temp.size() * 2 + sep);
                     for(String key: temp.keySet()){
+                        res.append("$" + key.length() + sep + key + sep);
                         res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
                     }
                 }
