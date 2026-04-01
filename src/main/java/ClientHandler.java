@@ -431,23 +431,26 @@ public class ClientHandler extends Thread {
 
                 }
             }
+
             System.out.println(validIds);
+
             StringBuilder res = new StringBuilder("*" + validIds.size() + sep);
 
+            System.out.println("1 : " + res);
             for(String streamId: validIds){
                 ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(streamId);
                 res.append("*2" + sep);
                 res.append("$" + streamId.length() + sep + streamId + sep);
 
-                res.append("*" + temp.size() + sep);
+                res.append("*" + temp.size()*2 + sep);
 
                 for(String key: temp.keySet()){
                     String val = temp.get(key);
                     res.append("$" + key.length() + sep + key + sep);
                     res.append("$" + val.length() + sep + val + sep);
                 }
+                System.out.println(res);
             }
-
             outputStream.write(res.toString().getBytes());
             return;
         }
