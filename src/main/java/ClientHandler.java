@@ -227,6 +227,7 @@ public class ClientHandler extends Thread {
                 count--;
                 temp.add(hm2.get(key).removeFirst());
             }
+            System.out.println(temp);
             if(hm2.get(key).isEmpty()) {
                 hm2.remove(key);
                 hm3.remove(key);
