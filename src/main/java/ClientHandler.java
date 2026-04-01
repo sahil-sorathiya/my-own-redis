@@ -223,11 +223,10 @@ public class ClientHandler extends Thread {
                 return;
             }
             ArrayList <String> temp = new ArrayList<>();
-            while(count > 0 && hm2.get(key).isEmpty()){
+            while(count > 0 && !hm2.get(key).isEmpty()){
                 count--;
                 temp.add(hm2.get(key).removeFirst());
             }
-            System.out.println(temp);
             if(hm2.get(key).isEmpty()) {
                 hm2.remove(key);
                 hm3.remove(key);
