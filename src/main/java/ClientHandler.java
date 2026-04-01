@@ -3,10 +3,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -314,7 +311,10 @@ public class ClientHandler extends Thread {
             }
 
             ConcurrentSkipListMap<String, ConcurrentHashMap<String, String>> currentSLM = hm4.get(streamName);
-            String lastEnteredStreamId = (currentSLM.isEmpty()) ? "0-0" : currentSLM.lastEntry().getKey();
+            String lastStreamId = (currentSLM.isEmpty()) ? "0-0" : currentSLM.lastEntry().getKey();
+
+            String[] streamIdSplit = streamId.split("-");
+            String[] lastStreamIdSplit = lastStreamId.split("-");
 
             // if streamId == 0-0 throw error
             if(streamId.equals("0-0")){
@@ -325,24 +325,31 @@ public class ClientHandler extends Thread {
             // auto generation of entire streamId
             if(streamId.equals("*")){
                 String unixTimeStamp = String.valueOf(Instant.now().toEpochMilli());
-                int seq = 0;
-                if(unixTimeStamp.equals(lastEnteredStreamId.split("-")[0])){
-                    seq = Integer.parseInt(lastEnteredStreamId.split("-")[1]) + 1;
+                long seq = 0;
+                if(unixTimeStamp.equals(lastStreamIdSplit[0])){
+                    seq = Long.parseLong(lastStreamIdSplit[1]) + 1;
                 }
                 streamId = unixTimeStamp + "-" + String.valueOf(seq);
             }
 
             // auto generation of sequence number
             if(streamId.charAt(streamId.length()-1) == '*'){
-                int seq = 0;
-                if(streamId.split("-")[0].equals(lastEnteredStreamId.split("-")[0])){
-                    seq = Integer.parseInt(lastEnteredStreamId.split("-")[1]) + 1;
+                long seq = 0;
+                if(streamIdSplit[0].equals(lastStreamIdSplit[0])){
+                    seq = Long.parseLong(lastStreamIdSplit[1]) + 1;
                 }
-                streamId = streamId.split("-")[0] + "-" + String.valueOf(seq);
+                streamId = streamIdSplit[0] + "-" + String.valueOf(seq);
             }
 
-            // if lastEnteredStreamId >= streamId throw error
-            if(lastEnteredStreamId.compareTo(streamId) >= 0){
+            // if lastStreamIdMillis > streamIdMillis throw error
+            if(Long.parseLong(lastStreamIdSplit[0]) > Long.parseLong(streamIdSplit[0])){
+                outputStream.write(("-ERR The ID specified in XADD is equal or smaller than the target stream top item" + sep).getBytes());
+                return;
+            }
+
+            // if lastStreamIdMillis == streamIdMillis && lastStreamIdSeq >= streamIdSeq throw error
+            if(Long.parseLong(lastStreamIdSplit[0]) == Long.parseLong(streamIdSplit[0])
+                && Long.parseLong(lastStreamIdSplit[1]) >= Long.parseLong(streamIdSplit[1])){
                 outputStream.write(("-ERR The ID specified in XADD is equal or smaller than the target stream top item" + sep).getBytes());
                 return;
             }
@@ -361,30 +368,61 @@ public class ClientHandler extends Thread {
         }
         if(s.equalsIgnoreCase("xrange")){
             String streamName = command.get(1);
-            final String streamIdStart = command.get(2) + ((command.get(2).contains("-")) ? "" : "-0");
-            final String streamIdEnd = command.get(3) + ((command.get(3).contains("-")) ? "" : "-999999999999999");
+            String streamIdStart = command.get(2);
+            String streamIdEnd = command.get(3);
 
+            // changing - & + to min and max possible streamIds
+            if(streamIdStart.equals("-")) streamIdStart = "0-1";
+            if(streamIdEnd.equals("+")) streamIdEnd = String.valueOf(Long.MAX_VALUE) + "-" + String.valueOf(Long.MAX_VALUE);
+
+            // adding seq number to the end if not there
+            if(!streamIdStart.contains("-")) streamIdStart = streamIdStart + "-0";
+            if(!streamIdEnd.contains("-")) streamIdEnd = streamIdEnd + String.valueOf(Long.MAX_VALUE);
+
+            // splitting the streamId
+            final String[] streamIdStartSplit = streamIdStart.split("-");
+            final String[] streamIdEndSplit = streamIdEnd.split("-");
+
+            // List of all streamIds that will go in response
             ArrayList <String> validIds = new ArrayList<>();
 
             if(hm4.containsKey(streamName)){
-                hm4.get(streamName).keySet().forEach((streamId)->{
-                    if(streamIdStart.compareTo(streamId) <= 0 && streamIdEnd.compareTo(streamId) >= 0){
+                for(String streamId: hm4.get(streamName).keySet()){
+                    String[] streamIdSplit = streamId.split("-");
+                    // start millis are equal so checking for seq number
+                    if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdStartSplit[0])
+                        && Long.parseLong(streamIdSplit[1]) >= Long.parseLong(streamIdStartSplit[1]))
+                    {
                         validIds.add(streamId);
                     }
-                });
+                    // end millis are equal so checking seq number
+                    else if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdEndSplit[0])
+                            && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
+                    {
+                        validIds.add(streamId);
+                    }
+                    // normal check
+                    else if(Long.parseLong(streamIdSplit[0]) > Long.parseLong(streamIdStartSplit[0])
+                        && Long.parseLong(streamIdSplit[0]) < Long.parseLong(streamIdEndSplit[0]))
+                    {
+                        validIds.add(streamId);
+                    }
+                }
             }
 
             StringBuilder res = new StringBuilder("*" + validIds.size() + sep);
 
-            validIds.forEach((streamId)->{
-                res.append("*2" + res + "$" + streamId.length() + sep + streamId + sep);
-                res.append("*" + hm4.get(streamName).get(streamId).size() + sep);
-                hm4.get(streamName).get(streamId).forEach((key, val)->{
+            for(String streamId: validIds){
+                ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(streamId);
+                res.append("*2" + sep + "$" + streamId.length() + sep + streamId + sep);
+                res.append("*" + temp.size() + sep);
+
+                for(String key: temp.keySet()){
+                    String val = temp.get(key);
                     res.append("$" + key.length() + sep + key + sep);
                     res.append("$" + val.length() + sep + val + sep);
-                });
-
-            });
+                }
+            }
 
             outputStream.write(res.toString().getBytes());
             return;
