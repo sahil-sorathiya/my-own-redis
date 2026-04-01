@@ -313,9 +313,6 @@ public class ClientHandler extends Thread {
             ConcurrentSkipListMap<String, ConcurrentHashMap<String, String>> currentSLM = hm4.get(streamName);
             String lastStreamId = (currentSLM.isEmpty()) ? "0-0" : currentSLM.lastEntry().getKey();
 
-            String[] streamIdSplit = streamId.split("-");
-            String[] lastStreamIdSplit = lastStreamId.split("-");
-
             // if streamId == 0-0 throw error
             if(streamId.equals("0-0")){
                 outputStream.write(("-ERR The ID specified in XADD must be greater than 0-0" + sep).getBytes());
@@ -331,6 +328,9 @@ public class ClientHandler extends Thread {
                 }
                 streamId = unixTimeStamp + "-" + String.valueOf(seq);
             }
+
+            String[] streamIdSplit = streamId.split("-");
+            String[] lastStreamIdSplit = lastStreamId.split("-");
 
             // auto generation of sequence number
             if(streamId.charAt(streamId.length()-1) == '*'){
