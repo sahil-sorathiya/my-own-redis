@@ -256,49 +256,48 @@ public class ClientHandler extends Thread {
                 synchronized (lhs1){
                     lhs1.add(Thread.currentThread().threadId());
                 }
-                String val;
                 while(true){
                     synchronized (temp){
-                        if(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId()) continue;
-                        synchronized (lhs1){
-                            lhs1.removeFirst();
-                            val = temp.removeFirst();
-                            break;
+                        if(!temp.isEmpty() && lhs1.getFirst() == Thread.currentThread().threadId()){
+                            synchronized (lhs1){
+                                lhs1.removeFirst();
+                            }
+                            String val = temp.removeFirst();
+                            outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
+                            return;
                         }
                     }
                 }
-
-                outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
-                return;
             }
 
-            Instant expiry = Instant.now().plusMillis((long) (seconds * 1000));
             synchronized (lhs1) {
                 lhs1.add(Thread.currentThread().threadId());
             }
-            boolean isExpired = false;
-            while (temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId()) {
+
+            Instant expiry = Instant.now().plusMillis((long) (seconds * 1000));
+            while(true){
+                // checking for expiry
                 Instant now = Instant.now();
                 if (now.isAfter(expiry)) {
-                    isExpired = true;
-                    break;
+                    synchronized (lhs1) {
+                        lhs1.remove(Thread.currentThread().threadId());
+                    }
+                    outputStream.write(("*-1" + sep).getBytes());
+                    return;
+                }
+                synchronized (temp){
+                    if(!temp.isEmpty() && lhs1.getFirst() == Thread.currentThread().threadId()){
+                        synchronized (lhs1) {
+                            lhs1.removeFirst();
+                        }
+                        String val = temp.removeFirst();
+                        outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
+                        return;
+                    }
                 }
             }
 
-            if (isExpired) {
-                synchronized (lhs1) {
-                    lhs1.remove(Thread.currentThread().threadId());
-                }
-                outputStream.write(("*-1" + sep).getBytes());
-                return;
-            }
 
-            synchronized (lhs1) {
-                lhs1.removeFirst();
-            }
-            String val = temp.removeFirst();
-            outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
-            return;
         }
         if(s.equalsIgnoreCase("type")){
             String key = command.get(1);
