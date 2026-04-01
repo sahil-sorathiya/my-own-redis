@@ -336,6 +336,7 @@ public class ClientHandler extends Thread {
             // store type of stream
             hm3.put(streamName, "stream");
             outputStream.write(("$" + streamId.length() + sep + streamId + sep).getBytes());
+            return;
 
         }
         outputStream.write(("+PONG" + sep).getBytes());
