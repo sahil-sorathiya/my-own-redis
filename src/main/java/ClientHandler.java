@@ -341,6 +341,8 @@ public class ClientHandler extends Thread {
                 streamId = streamIdSplit[0] + "-" + seq;
             }
 
+            System.out.println("SID : " + streamId);
+
             // if lastStreamIdMillis > streamIdMillis throw error
             if(Long.parseLong(lastStreamIdSplit[0]) > Long.parseLong(streamIdSplit[0])){
                 outputStream.write(("-ERR The ID specified in XADD is equal or smaller than the target stream top item" + sep).getBytes());
