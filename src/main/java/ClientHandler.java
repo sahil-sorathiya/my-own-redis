@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -357,6 +358,36 @@ public class ClientHandler extends Thread {
             outputStream.write(("$" + streamId.length() + sep + streamId + sep).getBytes());
             return;
 
+        }
+        if(s.equalsIgnoreCase("xrange")){
+            String streamName = command.get(1);
+            final String streamIdStart = command.get(2) + ((command.get(2).contains("-")) ? "" : "-0");
+            final String streamIdEnd = command.get(3) + ((command.get(3).contains("-")) ? "" : "-999999999999999");
+
+            ArrayList <String> validIds = new ArrayList<>();
+
+            if(hm4.containsKey(streamName)){
+                hm4.get(streamName).keySet().forEach((streamId)->{
+                    if(streamIdStart.compareTo(streamId) <= 0 && streamIdEnd.compareTo(streamId) >= 0){
+                        validIds.add(streamId);
+                    }
+                });
+            }
+
+            StringBuilder res = new StringBuilder("*" + validIds.size() + sep);
+
+            validIds.forEach((streamId)->{
+                res.append("*2" + res + "$" + streamId.length() + sep + streamId + sep);
+                res.append("*" + hm4.get(streamName).get(streamId).size() + sep);
+                hm4.get(streamName).get(streamId).forEach((key, val)->{
+                    res.append("$" + key.length() + sep + key + sep);
+                    res.append("$" + val.length() + sep + val + sep);
+                });
+
+            });
+
+            outputStream.write(res.toString().getBytes());
+            return;
         }
         outputStream.write(("+PONG" + sep).getBytes());
         return;
