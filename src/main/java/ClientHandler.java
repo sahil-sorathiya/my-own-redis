@@ -454,6 +454,53 @@ public class ClientHandler extends Thread {
             outputStream.write(res.toString().getBytes());
             return;
         }
+        if(s.equalsIgnoreCase("xread")){
+
+            StringBuilder res = new StringBuilder("*" + (command.size()-2)/2 + sep);
+
+            for(int i = 2; i <= (command.size()/2); i++){
+                String streamName = command.get(i);
+                String streamId = command.get(i + ((command.size()-2)/2));
+                String[] streamIdSplit = streamId.split("-");
+
+                ArrayList<String> validIds = new ArrayList<>();
+
+                if(hm4.containsKey(streamName)){
+                    for(String id: hm4.get(streamName).keySet()){
+                        String[] idSplit = id.split("-");
+
+                        if(Long.parseLong(idSplit[0]) > Long.parseLong(streamIdSplit[0])){
+                            validIds.add(id);
+                        }
+                        else if(Long.parseLong(idSplit[0]) == Long.parseLong(streamIdSplit[0])){
+                            if(Long.parseLong(idSplit[1]) > Long.parseLong(streamIdSplit[1])){
+                                validIds.add(id);
+                            }
+                        }
+                    }
+                }
+
+                res.append("*2" + sep);
+                res.append("$" + streamName.length() + sep + streamName + sep);
+                res.append("*" + validIds.size() + sep);
+
+                for(String id: validIds){
+                    res.append("*2" + sep);
+                    res.append("$" + id.length() + sep + id + sep);
+
+                    ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(id);
+                    res.append("*" + temp.size() * 2 + sep);
+                    for(String key: temp.keySet()){
+                        res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
+                    }
+                }
+
+
+            }
+
+            outputStream.write(res.toString().getBytes());
+            return;
+        }
         outputStream.write(("+PONG" + sep).getBytes());
         return;
     }
