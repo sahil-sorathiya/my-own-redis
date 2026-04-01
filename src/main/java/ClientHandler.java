@@ -256,11 +256,18 @@ public class ClientHandler extends Thread {
                 synchronized (lhs1){
                     lhs1.add(Thread.currentThread().threadId());
                 }
-                while(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId());
-                synchronized (lhs1){
-                    lhs1.removeFirst();
+                String val;
+                while(true){
+                    synchronized (temp){
+                        if(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId()) continue;
+                        synchronized (lhs1){
+                            lhs1.removeFirst();
+                            val = temp.removeFirst();
+                            break;
+                        }
+                    }
                 }
-                String val = temp.removeFirst();
+
                 outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
                 return;
             }
