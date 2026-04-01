@@ -397,24 +397,28 @@ public class ClientHandler extends Thread {
                                 && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
                     {
                         validIds.add(streamId);
+                        System.out.println("2 " + streamId);
                     }
                     // start millis are equal so checking for seq number
                     else if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdStartSplit[0])
                         && Long.parseLong(streamIdSplit[1]) >= Long.parseLong(streamIdStartSplit[1]))
                     {
                         validIds.add(streamId);
+                        System.out.println("2 " + streamId);
                     }
                     // end millis are equal so checking seq number
                     else if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdEndSplit[0])
                             && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
                     {
                         validIds.add(streamId);
+                        System.out.println("3 " + streamId);
                     }
                     // normal check
                     else if(Long.parseLong(streamIdSplit[0]) > Long.parseLong(streamIdStartSplit[0])
                             && Long.parseLong(streamIdSplit[0]) < Long.parseLong(streamIdEndSplit[0]))
                     {
                         validIds.add(streamId);
+                        System.out.println("4 " + streamId);
                     }
 
                 }
