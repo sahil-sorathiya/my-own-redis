@@ -217,30 +217,28 @@ public class ClientHandler extends Thread {
             int seconds = Integer.parseInt(command.get(2));
 
             if(!hm2.containsKey(key)){
-                outputStream.write(("*-1" + sep).getBytes());
+                hm2.put(key, new ArrayList<>());
             }
-            else{
-                ArrayList<String> temp = hm2.get(key);
-                if(temp.isEmpty()){
-                    if(seconds == 0){
-                        synchronized (lhs1){
-                            lhs1.add(Thread.currentThread().threadId());
-                        }
-                        while(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId());
-                        synchronized (lhs1){
-                            lhs1.removeFirst();
-                        }
-                        String val = temp.removeFirst();
-                        outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
+            ArrayList<String> temp = hm2.get(key);
+            if(temp.isEmpty()){
+                if(seconds == 0){
+                    synchronized (lhs1){
+                        lhs1.add(Thread.currentThread().threadId());
                     }
-                    else{
-
+                    while(temp.isEmpty() || lhs1.getFirst() != Thread.currentThread().threadId());
+                    synchronized (lhs1){
+                        lhs1.removeFirst();
                     }
-                }
-                else {
                     String val = temp.removeFirst();
                     outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
                 }
+                else{
+
+                }
+            }
+            else {
+                String val = temp.removeFirst();
+                outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
             }
         }
         else {
