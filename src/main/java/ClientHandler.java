@@ -319,6 +319,8 @@ public class ClientHandler extends Thread {
                 return;
             }
 
+            String[] lastStreamIdSplit = lastStreamId.split("-");
+
             // auto generation of entire streamId
             if(streamId.equals("*")){
                 String unixTimeStamp = String.valueOf(Instant.now().toEpochMilli());
@@ -330,7 +332,6 @@ public class ClientHandler extends Thread {
             }
 
             String[] streamIdSplit = streamId.split("-");
-            String[] lastStreamIdSplit = lastStreamId.split("-");
 
             // auto generation of sequence number
             if(streamId.charAt(streamId.length()-1) == '*'){
