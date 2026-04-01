@@ -306,19 +306,18 @@ public class ClientHandler extends Thread {
             String streamName = command.get(1);
             String streamId = command.get(2);
 
-            if(!hm4.containsKey(streamName)){
-                hm4.put(streamName, new ConcurrentSkipListMap<>());
-            }
-
-            ConcurrentSkipListMap<String, ConcurrentHashMap<String, String>> currentSLM = hm4.get(streamName);
-            String lastStreamId = (currentSLM.isEmpty()) ? "0-0" : currentSLM.lastEntry().getKey();
-
             // if streamId == 0-0 throw error
             if(streamId.equals("0-0")){
                 outputStream.write(("-ERR The ID specified in XADD must be greater than 0-0" + sep).getBytes());
                 return;
             }
 
+            if(!hm4.containsKey(streamName)){
+                hm4.put(streamName, new ConcurrentSkipListMap<>());
+            }
+
+            ConcurrentSkipListMap<String, ConcurrentHashMap<String, String>> currentSLM = hm4.get(streamName);
+            String lastStreamId = (currentSLM.isEmpty()) ? "0-0" : currentSLM.lastEntry().getKey();
             String[] lastStreamIdSplit = lastStreamId.split("-");
 
             // auto generation of entire streamId
@@ -334,12 +333,12 @@ public class ClientHandler extends Thread {
             String[] streamIdSplit = streamId.split("-");
 
             // auto generation of sequence number
-            if(streamId.charAt(streamId.length()-1) == '*'){
+            if(streamIdSplit[1].equals("*")){
                 long seq = 0;
                 if(streamIdSplit[0].equals(lastStreamIdSplit[0])){
                     seq = Long.parseLong(lastStreamIdSplit[1]) + 1;
                 }
-                streamId = streamIdSplit[0] + "-" + String.valueOf(seq);
+                streamId = streamIdSplit[0] + "-" + seq;
             }
 
             // if lastStreamIdMillis > streamIdMillis throw error
