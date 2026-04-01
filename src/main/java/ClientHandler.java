@@ -321,6 +321,25 @@ public class ClientHandler extends Thread {
                 return;
             }
 
+            // auto generation of entire streamId
+            if(streamId.equals("*")){
+                String unixTimeStamp = String.valueOf(Instant.now().toEpochMilli());
+                int seq = 0;
+                if(unixTimeStamp.equals(lastEnteredStreamId.split("-")[0])){
+                    seq = Integer.parseInt(lastEnteredStreamId.split("-")[1]) + 1;
+                }
+                streamId = unixTimeStamp + "-" + String.valueOf(seq);
+            }
+
+            // auto generation of sequence number
+            if(streamId.charAt(streamId.length()-1) == '*'){
+                int seq = 0;
+                if(streamId.split("-")[0].equals(lastEnteredStreamId.split("-")[0])){
+                    seq = Integer.parseInt(lastEnteredStreamId.split("-")[1]) + 1;
+                }
+                streamId = streamId.split("-")[0] + "-" + String.valueOf(seq);
+            }
+
             // if lastEnteredStreamId >= streamId throw error
             if(lastEnteredStreamId.compareTo(streamId) >= 0){
                 outputStream.write(("-ERR The ID specified in XADD is equal or smaller than the target stream top item" + sep).getBytes());
