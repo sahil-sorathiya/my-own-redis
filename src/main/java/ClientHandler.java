@@ -299,10 +299,10 @@ public class ClientHandler extends Thread {
             String key = command.get(1);
             if(!hm3.containsKey(key)){
                 outputStream.write(("+none" + sep).getBytes());
+                return;
             }
-            else {
-                outputStream.write(("+" + hm3.get(key) + sep).getBytes());
-            }
+            outputStream.write(("+" + hm3.get(key) + sep).getBytes());
+            return;
         }
         if(s.equalsIgnoreCase("xadd")){
             String streamName = command.get(1);
