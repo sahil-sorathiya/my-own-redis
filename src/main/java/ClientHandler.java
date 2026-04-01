@@ -389,15 +389,21 @@ public class ClientHandler extends Thread {
             if(hm4.containsKey(streamName)){
                 for(String streamId: hm4.get(streamName).keySet()){
                     String[] streamIdSplit = streamId.split("-");
+
+
+
+
                     // start millis are equal so checking for seq number
                     if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdStartSplit[0])
-                        && Long.parseLong(streamIdSplit[1]) >= Long.parseLong(streamIdStartSplit[1]))
+                        && Long.parseLong(streamIdSplit[1]) >= Long.parseLong(streamIdStartSplit[1])
+                            && Long.parseLong(streamIdSplit[0]) <= Long.parseLong(streamIdEndSplit[0]))
                     {
                         validIds.add(streamId);
                     }
                     // end millis are equal so checking seq number
                     else if(Long.parseLong(streamIdSplit[0]) == Long.parseLong(streamIdEndSplit[0])
-                            && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1]))
+                            && Long.parseLong(streamIdSplit[1]) <= Long.parseLong(streamIdEndSplit[1])
+                                && Long.parseLong(streamIdSplit[0]) >= Long.parseLong(streamIdStartSplit[0]))
                     {
                         validIds.add(streamId);
                     }
