@@ -214,7 +214,7 @@ public class ClientHandler extends Thread {
         }
         else if(s.equalsIgnoreCase("blpop")){
             String key = command.get(1);
-            int seconds = Integer.parseInt(command.get(2));
+            double seconds = Double.parseDouble(command.get(2));
 
             if(!hm2.containsKey(key)){
                 hm2.put(key, new ArrayList<>());
@@ -233,7 +233,7 @@ public class ClientHandler extends Thread {
                     outputStream.write(("*2" + sep + "$" + key.length() + sep + key + sep + "$" + val.length() + sep + val + sep).getBytes());
                 }
                 else{
-                    Instant expiry = Instant.now().plusSeconds(seconds);
+                    Instant expiry = Instant.now().plusMillis((long)(seconds * 1000));
                     synchronized (lhs1){
                         lhs1.add(Thread.currentThread().threadId());
                     }
