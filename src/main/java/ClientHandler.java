@@ -548,6 +548,7 @@ public class ClientHandler extends Thread {
                                 res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
                             }
                         }
+                        System.out.println(res);
                         outputStream.write(res.toString().getBytes());
                         return;
                     }
