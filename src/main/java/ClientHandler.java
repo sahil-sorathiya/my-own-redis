@@ -455,52 +455,103 @@ public class ClientHandler extends Thread {
             return;
         }
         if(s.equalsIgnoreCase("xread")){
+            if(command.get(1).equalsIgnoreCase("streams")) {
 
-            StringBuilder res = new StringBuilder("*" + (command.size()-2)/2 + sep);
-            System.out.println(res);
-            for(int i = 2; i <= (command.size()/2); i++){
-                String streamName = command.get(i);
-                String streamId = command.get(i + ((command.size()-2)/2));
-                String[] streamIdSplit = streamId.split("-");
+                StringBuilder res = new StringBuilder("*" + (command.size() - 2) / 2 + sep);
 
-                ArrayList<String> validIds = new ArrayList<>();
+                for (int i = 2; i <= (command.size() / 2); i++) {
+                    String streamName = command.get(i);
+                    String streamId = command.get(i + ((command.size() - 2) / 2));
+                    String[] streamIdSplit = streamId.split("-");
 
-                if(hm4.containsKey(streamName)){
-                    for(String id: hm4.get(streamName).keySet()){
-                        String[] idSplit = id.split("-");
+                    ArrayList<String> validIds = new ArrayList<>();
 
-                        if(Long.parseLong(idSplit[0]) > Long.parseLong(streamIdSplit[0])){
-                            validIds.add(id);
-                        }
-                        else if(Long.parseLong(idSplit[0]) == Long.parseLong(streamIdSplit[0])){
-                            if(Long.parseLong(idSplit[1]) > Long.parseLong(streamIdSplit[1])){
+                    if (hm4.containsKey(streamName)) {
+                        for (String id : hm4.get(streamName).keySet()) {
+                            String[] idSplit = id.split("-");
+
+                            if (Long.parseLong(idSplit[0]) > Long.parseLong(streamIdSplit[0])) {
                                 validIds.add(id);
+                            } else if (Long.parseLong(idSplit[0]) == Long.parseLong(streamIdSplit[0])) {
+                                if (Long.parseLong(idSplit[1]) > Long.parseLong(streamIdSplit[1])) {
+                                    validIds.add(id);
+                                }
                             }
                         }
                     }
-                }
 
-                res.append("*2" + sep);
-                res.append("$" + streamName.length() + sep + streamName + sep);
-                res.append("*" + validIds.size() + sep);
-
-                for(String id: validIds){
                     res.append("*2" + sep);
-                    res.append("$" + id.length() + sep + id + sep);
+                    res.append("$" + streamName.length() + sep + streamName + sep);
+                    res.append("*" + validIds.size() + sep);
 
-                    ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(id);
-                    res.append("*" + temp.size() * 2 + sep);
-                    for(String key: temp.keySet()){
-                        res.append("$" + key.length() + sep + key + sep);
-                        res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
+                    for (String id : validIds) {
+                        res.append("*2" + sep);
+                        res.append("$" + id.length() + sep + id + sep);
+
+                        ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(id);
+                        res.append("*" + temp.size() * 2 + sep);
+                        for (String key : temp.keySet()) {
+                            res.append("$" + key.length() + sep + key + sep);
+                            res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
+                        }
+                    }
+
+                }
+                outputStream.write(res.toString().getBytes());
+                return;
+            }
+            else if(command.get(1).equalsIgnoreCase("block")){
+                double millis = Double.parseDouble(command.get(2));
+                String streamName = command.get(4);
+                String streamId = command.get(5);
+                String[] streamIdSplit = streamId.split("-");
+                Instant expiry = Instant.now().plusMillis((long) (millis * 1000));
+
+                while(true){
+
+                    if(Instant.now().isAfter(expiry)) {
+                        outputStream.write(("*-1" + sep + "\n").getBytes());
+                        return;
+                    }
+
+                    ArrayList<String> validIds = new ArrayList<>();
+
+                    if (hm4.containsKey(streamName)) {
+                        for (String id : hm4.get(streamName).keySet()) {
+                            String[] idSplit = id.split("-");
+
+                            if (Long.parseLong(idSplit[0]) > Long.parseLong(streamIdSplit[0])) {
+                                validIds.add(id);
+                            } else if (Long.parseLong(idSplit[0]) == Long.parseLong(streamIdSplit[0])) {
+                                if (Long.parseLong(idSplit[1]) > Long.parseLong(streamIdSplit[1])) {
+                                    validIds.add(id);
+                                }
+                            }
+                        }
+                    }
+
+                    if(!validIds.isEmpty()){
+                        StringBuilder res = new StringBuilder("*" + (command.size() - 2) / 2 + sep);
+                        res.append("*2" + sep);
+                        res.append("$" + streamName.length() + sep + streamName + sep);
+                        res.append("*" + validIds.size() + sep);
+
+                        for (String id : validIds) {
+                            res.append("*2" + sep);
+                            res.append("$" + id.length() + sep + id + sep);
+
+                            ConcurrentHashMap<String, String> temp = hm4.get(streamName).get(id);
+                            res.append("*" + temp.size() * 2 + sep);
+                            for (String key : temp.keySet()) {
+                                res.append("$" + key.length() + sep + key + sep);
+                                res.append("$" + temp.get(key).length() + sep + temp.get(key) + sep);
+                            }
+                        }
+                        outputStream.write(res.toString().getBytes());
+                        return;
                     }
                 }
-
-
             }
-            System.out.println(res);
-            outputStream.write(res.toString().getBytes());
-            return;
         }
         outputStream.write(("+PONG" + sep).getBytes());
         return;
