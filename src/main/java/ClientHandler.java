@@ -551,6 +551,11 @@ public class ClientHandler extends Thread {
                         outputStream.write(res.toString().getBytes());
                         return;
                     }
+                    try {
+                        Thread.sleep(10); // 🔥 critical
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
