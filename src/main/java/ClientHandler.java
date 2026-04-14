@@ -531,6 +531,7 @@ public class ClientHandler extends Thread {
                     }
                     System.out.println("ValidIDs : " + validIds);
                     System.out.println("hm4 : " + hm4 );
+                    System.out.println(Instant.now());
                     if(!validIds.isEmpty()){
                         StringBuilder res = new StringBuilder("*" + (command.size() - 2) / 2 + sep);
                         res.append("*2" + sep);
@@ -550,6 +551,7 @@ public class ClientHandler extends Thread {
                         }
                         System.out.println(res);
                         outputStream.write(res.toString().getBytes());
+                        System.out.println(res);
                         return;
                     }
                     try {
