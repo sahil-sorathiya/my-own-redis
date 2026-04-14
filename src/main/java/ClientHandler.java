@@ -529,7 +529,7 @@ public class ClientHandler extends Thread {
                             }
                         }
                     }
-
+                    System.out.println("ValidIDs : " + validIds);
                     if(!validIds.isEmpty()){
                         StringBuilder res = new StringBuilder("*" + (command.size() - 2) / 2 + sep);
                         res.append("*2" + sep);
