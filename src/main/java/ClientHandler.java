@@ -551,7 +551,7 @@ public class ClientHandler extends Thread {
                         }
                         System.out.println("111 : " + res);
                         System.out.println(outputStream);
-
+                        outputStream.flush();
                         outputStream.write(res.toString().getBytes());
                         outputStream.flush();
                         System.out.println("222 : " + res.toString());
