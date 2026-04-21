@@ -21,6 +21,8 @@ public class MultiCommand implements Command {
             return;
         }
 
+        ctx.respWriter.write(new RespSimpleString("OK"));
+
         ArrayList <RespArray> queue = new ArrayList<>();
 
         while (true) {
