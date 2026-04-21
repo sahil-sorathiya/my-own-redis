@@ -1,23 +1,25 @@
+package ClientHandler;
+
 import Commands.*;
 import Context.ClientContext;
 import DataStore.DataStore;
 import RespParser.*;
 
 import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-    ClientContext clientContext;
-    DataStore dataStore;
+    public ClientContext clientContext;
 
-    ClientHandler(Socket clientSocket, DataStore dataStore) throws IOException {
+    public ClientHandler(Socket clientSocket, DataStore dataStore) throws IOException {
         this.clientContext = new ClientContext(clientSocket, dataStore);
-        this.dataStore = dataStore;
     }
 
-    private void handleCommand(RespArray command) throws IOException, InterruptedException {
+    public ClientHandler(ClientContext clientContext){
+        this.clientContext = clientContext;
+    }
+
+    public void handleCommand(RespArray command) throws IOException, InterruptedException {
         String commandName = ((RespBulkString) command.values.get(0)).value;
 
         if (commandName.equalsIgnoreCase("PING")) {
@@ -61,6 +63,15 @@ public class ClientHandler implements Runnable {
         }
         else if(commandName.equalsIgnoreCase("INCR")){
             new IncrCommand().execute(command, clientContext);
+        }
+        else if(commandName.equalsIgnoreCase("MULTI")){
+            new MultiCommand().execute(command, clientContext);
+        }
+        else if(commandName.equalsIgnoreCase("EXEC")){
+            new ExecCommand().execute(command, clientContext);
+        }
+        else if(commandName.equalsIgnoreCase("DISCARD")){
+            new DiscardCommand().execute(command, clientContext);
         }
         else {
             clientContext.respWriter.write(new RespSimpleString("ERR unknown command " + commandName));
