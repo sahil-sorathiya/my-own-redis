@@ -36,6 +36,8 @@ public class LpushCommand implements Command {
             return;
         }
 
+        int currentSize = ((RespArray) val).values.size();
+
         //: Append all items to list
         for(int i = 2; i < command.size(); i++){
             //: BLPOP : If blpopQueue exists for given key, try to offer key directly to consumer
@@ -52,6 +54,6 @@ public class LpushCommand implements Command {
         }
 
         //: Respond with List length
-        ctx.respWriter.write(new RespInteger(command.size() - 2));
+        ctx.respWriter.write(new RespInteger(currentSize + command.size() - 2));
     }
 }
