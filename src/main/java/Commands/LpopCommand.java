@@ -13,7 +13,7 @@ public class LpopCommand implements Command {
 
         //: If not exactly tow or three arguments passed, throw error
         //: LPOP <key> [<total-element-to-remove>]
-        if(command.size() != 2 || command.size() != 3) {
+        if(command.size() != 2 && command.size() != 3) {
             ctx.respWriter.write(new RespError("ERR wrong number of arguments for 'lpop' command"));
             return;
         }
