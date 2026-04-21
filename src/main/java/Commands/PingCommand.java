@@ -15,6 +15,6 @@ public class PingCommand implements Command {
             ctx.respWriter.write(new RespError("ERR wrong number of arguments for 'ping' command"));
             return;
         }
-        ctx.respWriter.write(new RespBulkString("PONG"));
+        ctx.respWriter.write(new RespSimpleString("PONG"));
     }
 }
