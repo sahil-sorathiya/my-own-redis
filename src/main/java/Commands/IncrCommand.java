@@ -4,6 +4,7 @@ import Context.ClientContext;
 import RespParser.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class IncrCommand implements Command {
@@ -23,6 +24,7 @@ public class IncrCommand implements Command {
         //: If key doesn't exist, add <key, 1>
         if(!ctx.dataStore.store.containsKey(key)){
             ctx.dataStore.store.put(key, new RespBulkString("1"));
+            ctx.dataStore.expiry.put(key, Instant.MAX);
             ctx.respWriter.write(new RespInteger(1));
             return;
         }
