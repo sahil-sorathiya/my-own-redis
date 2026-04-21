@@ -10,8 +10,8 @@ public class Main {
 
         DataStore dataStore = new DataStore();
 
-//        int port = 6379;
-        int port = 2727;
+        int port = 6379;
+//        int port = 2727;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
