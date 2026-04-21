@@ -27,9 +27,10 @@ public class BlpopCommand implements Command {
         String key = ((RespBulkString) command.get(1)).value;
 
         //: Extract seconds from command
-        long seconds = 0;
+        long milliSeconds = 0;
         try {
-            seconds = Long.parseLong(((RespBulkString)command.get(2)).value);
+            double seconds = Double.parseDouble(((RespBulkString)command.get(2)).value);
+            milliSeconds = (long) (seconds * 1000);
         } catch (NumberFormatException e) {
             ctx.respWriter.write(new RespError("ERR value is not an integer or out of range"));
         }
@@ -67,8 +68,8 @@ public class BlpopCommand implements Command {
 
         //: if seconds are non-zero, poll with timeout
         RespObject element;
-        if(seconds != 0){
-            element = ctx.dataStore.keyToBlpopQueue.get(key).poll(seconds, TimeUnit.SECONDS);
+        if(milliSeconds != 0){
+            element = ctx.dataStore.keyToBlpopQueue.get(key).poll(milliSeconds, TimeUnit.MILLISECONDS);
         }
         //: else use take which will block this thread infinitely
         else {
