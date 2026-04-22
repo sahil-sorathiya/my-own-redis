@@ -32,7 +32,7 @@ public class Main {
                 }
             }
             else if(args[i].equals("--replicaof")){
-                if (i + 2 < args.length) {
+                if (i + 1 < args.length) {
                     try {
                         serverContext.setRole("slave");
                         i++;
