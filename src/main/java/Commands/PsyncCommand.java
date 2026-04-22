@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class PsyncCommand implements Command {
     @Override
-    public void execute(RespObject command, ClientContext ctx) throws IOException, InterruptedException {
+    public void execute(RespObject c, ClientContext ctx) throws IOException, InterruptedException {
         ArrayList<RespObject> command = ((RespArray) c).values;
 
         //: If not exactly three argument passed, throw error
