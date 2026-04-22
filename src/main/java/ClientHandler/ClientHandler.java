@@ -77,6 +77,12 @@ public class ClientHandler implements Runnable {
         else if(commandName.equalsIgnoreCase("INFO")){
             new InfoCommand().execute(command, clientContext);
         }
+        else if(commandName.equalsIgnoreCase("RESPCONFIG")){
+            new RespconfigCommand().execute(command, clientContext);
+        }
+        else if(commandName.equalsIgnoreCase("PSYNC")){
+            new PsyncCommand().execute(command, clientContext);
+        }
         else {
             clientContext.respWriter.write(new RespSimpleString("ERR unknown command " + commandName));
         }

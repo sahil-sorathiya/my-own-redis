@@ -18,7 +18,7 @@ public class InfoCommand implements Command {
         //: If not exactly two argument passed, throw error
         //: INFO <key>
         if(command.size() != 2) {
-            ctx.respWriter.write(new RespError("ERR wrong number of arguments for 'INFO' command"));
+            ctx.respWriter.write(new RespError("ERR wrong number of arguments for 'info' command"));
             return;
         }
 

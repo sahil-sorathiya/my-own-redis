@@ -26,10 +26,12 @@ public class Replica {
 
     public void performHandshake() throws Exception {
         sendPingCommand();
-
+        sendReplConfigCommand("listening-port", String.valueOf(serverContext.getPort()));
+        sendReplConfigCommand("capa", "psync2");
+        sendPsyncCommand("?", "-1");
     }
 
-    void sendPingCommand() throws Exception {
+    boolean sendPingCommand() throws IOException {
         String command = "PING";
 
         String request = Utils.formatCommand(command);
@@ -42,12 +44,41 @@ public class Replica {
         RespParser parser = new RespParser(in);
         RespObject response = parser.parse();
 
-        if(!(response instanceof RespSimpleString)){
-            throw new Exception("Invalid response to ping command");
-        }
+        if(!(response instanceof RespSimpleString)) return false;
+        return ((RespSimpleString) response).value.equals("PONG");
 
-        System.out.println(((RespSimpleString) response).value);
+    }
 
+    boolean sendReplConfigCommand(String key, String val) throws IOException {
+        String command = "REPLCONFIG" + " " + key + " " + val;
+        String request = Utils.formatCommand(command);
+
+        // Send to master
+        this.out.write(request.getBytes());
+        this.out.flush();
+
+        // Read server response
+        RespParser parser = new RespParser(in);
+        RespObject response = parser.parse();
+
+        if(!(response instanceof RespSimpleString)) return false;
+        return ((RespSimpleString) response).value.equals("OK");
+    }
+
+    boolean sendPsyncCommand(String key, String val) throws IOException {
+        String command = "PSYNC" + " " + key + " " + val;
+        String request = Utils.formatCommand(command);
+
+        // Send to master
+        this.out.write(request.getBytes());
+        this.out.flush();
+
+        // Read server response
+        RespParser parser = new RespParser(in);
+        RespObject response = parser.parse();
+
+        if(!(response instanceof RespSimpleString)) return false;
+        return true;
     }
 
 }
