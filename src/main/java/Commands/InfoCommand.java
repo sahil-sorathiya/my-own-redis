@@ -1,6 +1,7 @@
 package Commands;
 
 import Context.ClientContext;
+import Context.ServerContext;
 import RespParser.RespArray;
 import RespParser.RespBulkString;
 import RespParser.RespError;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 public class InfoCommand implements Command {
     @Override
-    public void execute(RespObject c, ClientContext ctx) throws IOException, InterruptedException {
+    public void execute(RespObject c, ClientContext ctx, ServerContext serverContext) throws IOException, InterruptedException {
         ArrayList<RespObject> command = ((RespArray) c).values;
 
         //: If not exactly two argument passed, throw error
@@ -21,6 +22,6 @@ public class InfoCommand implements Command {
             return;
         }
 
-        ctx.respWriter.write(new RespBulkString("role:master"));
+        ctx.respWriter.write(new RespBulkString("role:" + serverContext.getRole()));
     }
 }

@@ -2,6 +2,7 @@ package ClientHandler;
 
 import Commands.*;
 import Context.ClientContext;
+import Context.ServerContext;
 import DataStore.DataStore;
 import RespParser.*;
 
@@ -10,9 +11,11 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
     public ClientContext clientContext;
+    public ServerContext serverContext;
 
-    public ClientHandler(Socket clientSocket, DataStore dataStore) throws IOException {
+    public ClientHandler(Socket clientSocket, DataStore dataStore, ServerContext serverContext) throws IOException {
         this.clientContext = new ClientContext(clientSocket, dataStore);
+        this.serverContext = serverContext;
     }
 
     public ClientHandler(ClientContext clientContext){
@@ -74,7 +77,7 @@ public class ClientHandler implements Runnable {
             new DiscardCommand().execute(command, clientContext);
         }
         else if(commandName.equalsIgnoreCase("INFO")){
-            new InfoCommand().execute(command, clientContext);
+            new InfoCommand().execute(command, clientContext, serverContext);
         }
         else {
             clientContext.respWriter.write(new RespSimpleString("ERR unknown command " + commandName));

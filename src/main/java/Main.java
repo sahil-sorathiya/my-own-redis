@@ -1,4 +1,5 @@
 import ClientHandler.ClientHandler;
+import Context.ServerContext;
 import DataStore.DataStore;
 
 import java.io.*;
@@ -11,15 +12,15 @@ public class Main {
 
         DataStore dataStore = new DataStore();
 
-        int port = 6379;
-//        int port = 2727;
+        ServerContext serverContext = new ServerContext(6379, "master");
+//        ServerContext serverContext = new ServerContext(2727, "master");
 
         //: Parsing arguments
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--port")) {
                 if (i + 1 < args.length) {
                     try {
-                        port = Integer.parseInt(args[i + 1]);
+                        serverContext.setPort(Integer.parseInt(args[i + 1]));
                         i++;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid port number.");
@@ -30,14 +31,29 @@ public class Main {
                     return;
                 }
             }
+            else if(args[i].equals("--replicaof")){
+                if (i + 2 < args.length) {
+                    try {
+                        serverContext.setRole("slave");
+                        i++;
+                        i++;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid port number.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Missing/Invalid value for --replicaof");
+                    return;
+                }
+            }
         }
 
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(serverContext.getPort());
             serverSocket.setReuseAddress(true);
             while(true){
                 Socket clientSocket = serverSocket.accept();
-                new Thread(new ClientHandler(clientSocket, dataStore)).start();
+                new Thread(new ClientHandler(clientSocket, dataStore, serverContext)).start();
             }
 
         } catch (IOException e) {
