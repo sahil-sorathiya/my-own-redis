@@ -32,6 +32,7 @@ public class Utils {
                 if (i + 1 < args.length) {
                     try {
                         serverContext.setPort(Integer.parseInt(args[i + 1]));
+
                         i++;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid port number.");
@@ -46,8 +47,12 @@ public class Utils {
                 if (i + 1 < args.length) {
                     try {
                         serverContext.setRole("slave");
+
                         serverContext.setMasterIP(args[i+1].split(" ")[0]);
                         serverContext.setMasterPort(Integer.parseInt(args[i+1].split(" ")[1]));
+                        serverContext.setMasterReplId("?");
+                        serverContext.setMasterReplOffset(-1);
+
                         i++;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid port number.");

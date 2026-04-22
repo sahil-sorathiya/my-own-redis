@@ -75,9 +75,10 @@ public class Replica {
 
         // Read server response
         RespParser parser = new RespParser(in);
-        RespObject response = parser.parse();
+        RespObject response1 = parser.parse();
+        RespObject response2 = parser.parse();
 
-        if(!(response instanceof RespSimpleString)) return false;
+        if(!(response1 instanceof RespSimpleString)) return false;
         return true;
     }
 

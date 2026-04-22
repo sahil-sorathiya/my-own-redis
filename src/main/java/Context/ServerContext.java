@@ -11,6 +11,7 @@ public class ServerContext {
     public ServerContext(int port, String role, String masterReplId, long masterReplOffset, String masterIP, int masterPort) {
         this.port = port;
         this.role = role;
+
         this.masterReplId = masterReplId;
         this.masterReplOffset = masterReplOffset;
         this.masterIP = masterIP;
