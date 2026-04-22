@@ -11,7 +11,6 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
     public ClientContext clientContext;
-    public ServerContext serverContext;
 
     public ClientHandler(Socket clientSocket, DataStore dataStore, ServerContext serverContext) throws IOException {
         this.clientContext = new ClientContext(clientSocket, dataStore, serverContext);
