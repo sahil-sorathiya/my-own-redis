@@ -16,7 +16,7 @@ public class Replica {
     InputStream in;
 
     public Replica(ServerContext serverContext) throws IOException {
-        this.socket = new Socket(serverContext.getMasterIP(), serverContext.getPort());
+        this.socket = new Socket(serverContext.getMasterIP(), serverContext.getMasterPort());
         System.out.println("Connected to server");
 
         this.out = socket.getOutputStream();

@@ -58,10 +58,10 @@ public class Utils {
                     return;
                 }
             }
-            System.out.println(serverContext.getMasterIP());
-            System.out.println(serverContext.getMasterPort());
-            System.out.println(serverContext.getPort());
-            System.out.println(serverContext.getRole());
+//            System.out.println(serverContext.getMasterIP());
+//            System.out.println(serverContext.getMasterPort());
+//            System.out.println(serverContext.getPort());
+//            System.out.println(serverContext.getRole());
         }
     }
 }
