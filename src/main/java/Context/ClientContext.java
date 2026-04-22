@@ -16,14 +16,16 @@ public class ClientContext {
     public RespParser respParser;
     public RespWriter respWriter;
 
+    public ServerContext serverContext;
     public DataStore dataStore;
 
-    public ClientContext(Socket clientSocket, DataStore dataStore) throws IOException {
+    public ClientContext(Socket clientSocket, DataStore dataStore, ServerContext serverContext) throws IOException {
         this.clientSocket = clientSocket;
         this.inputStream = clientSocket.getInputStream();
         this.outputStream = clientSocket.getOutputStream();
         this.respParser = new RespParser(inputStream);
         this.respWriter = new RespWriter(outputStream);
         this.dataStore = dataStore;
+        this.serverContext = serverContext;
     }
 }

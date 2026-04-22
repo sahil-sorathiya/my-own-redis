@@ -14,8 +14,7 @@ public class ClientHandler implements Runnable {
     public ServerContext serverContext;
 
     public ClientHandler(Socket clientSocket, DataStore dataStore, ServerContext serverContext) throws IOException {
-        this.clientContext = new ClientContext(clientSocket, dataStore);
-        this.serverContext = serverContext;
+        this.clientContext = new ClientContext(clientSocket, dataStore, serverContext);
     }
 
     public ClientHandler(ClientContext clientContext){
@@ -77,7 +76,7 @@ public class ClientHandler implements Runnable {
             new DiscardCommand().execute(command, clientContext);
         }
         else if(commandName.equalsIgnoreCase("INFO")){
-            new InfoCommand().execute(command, clientContext, serverContext);
+            new InfoCommand().execute(command, clientContext);
         }
         else {
             clientContext.respWriter.write(new RespSimpleString("ERR unknown command " + commandName));
