@@ -26,8 +26,8 @@ public class Replica {
 
     public void performHandshake() throws Exception {
         sendPingCommand();
-        sendReplConfigCommand("listening-port", String.valueOf(serverContext.getPort()));
-        sendReplConfigCommand("capa", "psync2");
+        sendReplConfCommand("listening-port", String.valueOf(serverContext.getPort()));
+        sendReplConfCommand("capa", "psync2");
         sendPsyncCommand("?", "-1");
     }
 
@@ -49,8 +49,8 @@ public class Replica {
 
     }
 
-    boolean sendReplConfigCommand(String key, String val) throws IOException {
-        String command = "REPLCONFIG" + " " + key + " " + val;
+    boolean sendReplConfCommand(String key, String val) throws IOException {
+        String command = "REPLCONF" + " " + key + " " + val;
         String request = Utils.formatCommand(command);
 
         // Send to master
