@@ -22,6 +22,11 @@ public class InfoCommand implements Command {
             return;
         }
 
-        ctx.respWriter.write(new RespBulkString("role:" + ctx.serverContext.getRole()));
+        ctx.respWriter.write(
+                new RespBulkString(
+                "role:" + ctx.serverContext.getRole()
+                    + "\nmaster_replid:" + "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+                        + "\nmaster_repl_offset:" + "0"
+                ));
     }
 }
