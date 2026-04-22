@@ -77,7 +77,7 @@ public class ClientHandler implements Runnable {
         else if(commandName.equalsIgnoreCase("INFO")){
             new InfoCommand().execute(command, clientContext);
         }
-        else if(commandName.equalsIgnoreCase("RESPCONFIG")){
+        else if(commandName.equalsIgnoreCase("REPLCONF")){
             new ReplconfCommand().execute(command, clientContext);
         }
         else if(commandName.equalsIgnoreCase("PSYNC")){
