@@ -73,6 +73,9 @@ public class ClientHandler implements Runnable {
         else if(commandName.equalsIgnoreCase("DISCARD")){
             new DiscardCommand().execute(command, clientContext);
         }
+        else if(commandName.equalsIgnoreCase("INFO")){
+            new InfoCommand().execute(command, clientContext);
+        }
         else {
             clientContext.respWriter.write(new RespSimpleString("ERR unknown command " + commandName));
         }
